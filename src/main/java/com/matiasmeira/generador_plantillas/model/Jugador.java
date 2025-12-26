@@ -3,6 +3,8 @@ package com.matiasmeira.generador_plantillas.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "jugadores")
 public class Jugador {
@@ -19,6 +21,7 @@ public class Jugador {
 
     @ManyToOne
     @JoinColumn(name = "equipo_id")
+    @JsonIgnoreProperties("jugadores")
     private Equipo equipo;
 
     // --- GETTERS AND SETTERS ---

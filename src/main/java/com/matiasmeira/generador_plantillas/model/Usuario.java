@@ -3,6 +3,8 @@ package com.matiasmeira.generador_plantillas.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -19,6 +21,7 @@ public class Usuario {
     private String rol;
 
     @OneToMany(mappedBy = "usuarioDueno", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Equipo> equipos;
 
     // --- GETTERS AND SETTERS ---

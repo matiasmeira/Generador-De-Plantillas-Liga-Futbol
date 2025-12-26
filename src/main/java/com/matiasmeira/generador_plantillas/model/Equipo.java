@@ -3,6 +3,8 @@ package com.matiasmeira.generador_plantillas.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "equipos")
 public class Equipo {
@@ -15,6 +17,7 @@ public class Equipo {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties("equipos")
     private Usuario usuarioDueno;
 
     @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL)
