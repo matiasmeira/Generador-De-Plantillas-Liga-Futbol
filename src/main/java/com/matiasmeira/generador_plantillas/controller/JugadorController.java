@@ -1,13 +1,24 @@
 package com.matiasmeira.generador_plantillas.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.matiasmeira.generador_plantillas.model.Jugador;
 import com.matiasmeira.generador_plantillas.service.JugadorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/jugadores")
+@CrossOrigin(origins = "http://localhost:5173")
 public class JugadorController {
     @Autowired
     private JugadorService jugadorService;
@@ -17,8 +28,14 @@ public class JugadorController {
         return jugadorService.guardar(jugador, equipoId);
     }
 
+    @DeleteMapping("/{id}")
+    public void eliminar(@PathVariable Long id) {
+        jugadorService.eliminar(id);
+    }
+
     @GetMapping("/equipo/{equipoId}")
     public List<Jugador> listarPorEquipo(@PathVariable Long equipoId) {
         return jugadorService.obtenerPorEquipo(equipoId);
     }
+
 }
