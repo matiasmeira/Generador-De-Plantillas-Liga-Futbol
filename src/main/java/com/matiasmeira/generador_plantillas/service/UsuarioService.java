@@ -1,10 +1,12 @@
 package com.matiasmeira.generador_plantillas.service;
 
-import com.matiasmeira.generador_plantillas.model.Usuario;
-import com.matiasmeira.generador_plantillas.repository.UsuarioRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.matiasmeira.generador_plantillas.model.Usuario;
+import com.matiasmeira.generador_plantillas.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
@@ -19,5 +21,11 @@ public class UsuarioService {
     }
     public Usuario obtenerPorId(Long id) {
         return usuarioRepository.findById(id).orElse(null); 
+    }
+    public Usuario login(String username, String password) {
+    return usuarioRepository.findAll().stream()
+            .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
+            .findFirst()
+            .orElse(null); 
     }
 }
