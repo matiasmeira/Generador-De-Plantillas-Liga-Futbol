@@ -18,7 +18,7 @@ import com.matiasmeira.generador_plantillas.service.JugadorService;
 
 @RestController
 @RequestMapping("/api/jugadores")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "https://tu-frontend.up.railway.app"})
 public class JugadorController {
     @Autowired
     private JugadorService jugadorService;

@@ -17,7 +17,7 @@ import com.matiasmeira.generador_plantillas.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "https://tu-frontend.up.railway.app"})
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;

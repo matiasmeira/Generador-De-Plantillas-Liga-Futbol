@@ -20,7 +20,7 @@ import com.matiasmeira.generador_plantillas.service.EquipoService;
 
 @RestController
 @RequestMapping("/api/equipos")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "https://tu-frontend.up.railway.app"})
 public class EquipoController {
     @Autowired
     private EquipoService equipoService;
