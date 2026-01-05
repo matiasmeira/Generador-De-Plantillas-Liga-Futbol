@@ -3,7 +3,6 @@ package com.matiasmeira.generador_plantillas.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,6 @@ import com.matiasmeira.generador_plantillas.service.JugadorService;
 
 @RestController
 @RequestMapping("/api/jugadores")
-@CrossOrigin(origins = {"http://localhost:5173", "https://tu-frontend.up.railway.app"})
 public class JugadorController {
     @Autowired
     private JugadorService jugadorService;
