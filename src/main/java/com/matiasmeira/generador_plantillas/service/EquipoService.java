@@ -1,5 +1,6 @@
 package com.matiasmeira.generador_plantillas.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -7,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.matiasmeira.generador_plantillas.dto.EquipoDTO;
+import com.matiasmeira.generador_plantillas.dto.JugadorDTO;
 import com.matiasmeira.generador_plantillas.model.Equipo;
-import com.matiasmeira.generador_plantillas.model.Usuario; // Importante para updates
+import com.matiasmeira.generador_plantillas.model.Jugador;
+import com.matiasmeira.generador_plantillas.model.Usuario; 
 import com.matiasmeira.generador_plantillas.repository.EquipoRepository;
 import com.matiasmeira.generador_plantillas.repository.UsuarioRepository;
 
@@ -21,30 +25,37 @@ public class EquipoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Equipo guardar(Equipo equipo, Long usuarioId) {
+    @Autowired
+    private JugadorService jugadorService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    public EquipoDTO.Salida guardar(EquipoDTO.Entrada equipoDTO, Long usuarioId) {
         Usuario dueno = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Equipo equipo = new Equipo();
+        equipo.setNombre(equipoDTO.getNombre());
         equipo.setUsuarioDueno(dueno);
-        return equipoRepository.save(equipo);
+        return mapToDTO(equipoRepository.save(equipo));
     }
 
-    public List<Equipo> obtenerTodos() {
-        return equipoRepository.findAll();
+    public List<EquipoDTO.Salida> obtenerTodos() {
+        List<Equipo> equipos = equipoRepository.findAll();
+        List<EquipoDTO.Salida> equiposDto = new ArrayList<>();
+        for (Equipo equipo : equipos) {
+            equiposDto.add(mapToDTO(equipo));
+        }
+        return equiposDto;
     }
 
-    /**
-     * Actualiza un equipo validando permisos de ADMIN o Dueño.
-     */
     @Transactional
-    public Equipo actualizarConSeguridad(Long equipoId, Equipo datosNuevos, Long usuarioIdSesion, String rolSesion) {
-        // 1. Buscar el equipo existente
+    public EquipoDTO.Salida actualizarConSeguridad(Long equipoId, Equipo datosNuevos, Long usuarioIdSesion, String rolSesion) {
+
         Equipo equipoExistente = equipoRepository.findById(equipoId)
                 .orElseThrow(() -> new RuntimeException("Equipo no encontrado con ID: " + equipoId));
 
-        // 2. Validar permisos
-        boolean esAdmin = "ADMIN".equalsIgnoreCase(rolSesion);
-        
-        // Comparamos el ID del dueño del equipo con el ID del usuario en sesión
+        boolean esAdmin = "ADMIN".equalsIgnoreCase(rolSesion);  
         boolean esDueño = equipoExistente.getUsuarioDueno() != null && 
                           Objects.equals(equipoExistente.getUsuarioDueno().getId(), usuarioIdSesion);
 
@@ -52,12 +63,24 @@ public class EquipoService {
             throw new RuntimeException("No tienes permiso para editar este equipo. Solo el dueño o un ADMIN pueden hacerlo.");
         }
 
-        // 3. Actualizar solo los campos permitidos
         equipoExistente.setNombre(datosNuevos.getNombre());
         
-        // Nota: No actualizamos el usuarioDueno para que el equipo no cambie de manos accidentalmente
+        return mapToDTO(equipoRepository.save(equipoExistente));
+    }
 
-        // 4. Guardar cambios
-        return equipoRepository.save(equipoExistente);
+    EquipoDTO.Salida mapToDTO(Equipo equipo) {
+        EquipoDTO.Salida dto = new EquipoDTO.Salida();
+        dto.setId(equipo.getId());
+        dto.setNombre(equipo.getNombre());
+        dto.setUsuarioDueno(usuarioService.mapToDto(equipo.getUsuarioDueno()));
+        List<JugadorDTO.Salida> jugadoresDto = new ArrayList<>();
+        if (equipo.getJugadores() != null) {
+            for (Jugador jugador : equipo.getJugadores()) {
+                JugadorDTO.Salida dtoJugador = jugadorService.mapToDto(jugador);
+                jugadoresDto.add(dtoJugador);
+            }
+        }
+        dto.setJugadores(jugadoresDto);
+        return dto;
     }
 }

@@ -3,6 +3,7 @@ package com.matiasmeira.generador_plantillas.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.matiasmeira.generador_plantillas.dto.EquipoDTO;
 import com.matiasmeira.generador_plantillas.model.Equipo;
 import com.matiasmeira.generador_plantillas.service.EquipoService;
 
@@ -24,12 +26,13 @@ public class EquipoController {
     private EquipoService equipoService;
 
     @PostMapping
-    public Equipo crear(@RequestBody Equipo equipo, @RequestParam Long usuarioId) {
-        return equipoService.guardar(equipo, usuarioId);
+    public ResponseEntity<?> crear(@RequestBody EquipoDTO.Entrada equipo, @RequestParam Long usuarioId) {
+        EquipoDTO.Salida nuevoEquipo = equipoService.guardar(equipo, usuarioId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoEquipo);
     }
 
     @GetMapping
-    public List<Equipo> listar() {
+    public List<EquipoDTO.Salida> listar() {
         return equipoService.obtenerTodos();
     }
 
@@ -40,8 +43,8 @@ public class EquipoController {
         @RequestHeader("X-User-Id") Long usuarioId,
         @RequestHeader("X-User-Role") String rol
     ) {
-        // El controller delega toda la responsabilidad al service
-        Equipo actualizado = equipoService.actualizarConSeguridad(id, equipo, usuarioId, rol);
+
+        EquipoDTO.Salida actualizado = equipoService.actualizarConSeguridad(id, equipo, usuarioId, rol);
         return ResponseEntity.ok(actualizado);
     }
 }

@@ -11,7 +11,6 @@ import com.matiasmeira.generador_plantillas.model.Jugador;
 public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 
     List<Jugador> findByEquipoId(Long equipoId);
-
     
     int countByEquipoId(Long equipoId);
 

@@ -1,10 +1,12 @@
 package com.matiasmeira.generador_plantillas.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.matiasmeira.generador_plantillas.dto.UsuarioDTO;
 import com.matiasmeira.generador_plantillas.model.Usuario;
 import com.matiasmeira.generador_plantillas.repository.UsuarioRepository;
 
@@ -13,19 +15,40 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Usuario guardar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public UsuarioDTO.Salida guardar(UsuarioDTO.Entrada usuarioEntrada) {
+        Usuario usuario = new Usuario();
+        usuario.setUsername(usuarioEntrada.getUsername());
+        usuario.setPassword(usuarioEntrada.getPassword());
+        usuario.setRol(usuarioEntrada.getRol());
+        return mapToDto(usuarioRepository.save(usuario));
     }
-    public List<Usuario> obtenerTodos() {
-        return usuarioRepository.findAll();
+
+    public List<UsuarioDTO.Salida> obtenerTodos() {
+        List<UsuarioDTO.Salida> usuariosDTO = new ArrayList<>();
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        for (Usuario usuario : usuarios) {
+            usuariosDTO.add(mapToDto(usuario));
+        }
+        return usuariosDTO;
     }
-    public Usuario obtenerPorId(Long id) {
-        return usuarioRepository.findById(id).orElse(null); 
+    
+    public UsuarioDTO.Salida obtenerPorId(Long id) {
+        return mapToDto(usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
     }
-    public Usuario login(String username, String password) {
-    return usuarioRepository.findAll().stream()
-            .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
-            .findFirst()
-            .orElse(null); 
+
+    public UsuarioDTO.Salida login(String username, String password) {
+        Usuario usuario = usuarioRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (usuario.getPassword().equals(password)) {
+            return mapToDto(usuario);
+        }
+        return null;
+    }
+
+    public UsuarioDTO.Salida mapToDto(Usuario usuario) {
+        UsuarioDTO.Salida usuarioSalida = new UsuarioDTO.Salida();
+        usuarioSalida.setId(usuario.getId());
+        usuarioSalida.setUsername(usuario.getUsername());
+        usuarioSalida.setRol(usuario.getRol());
+        return usuarioSalida;
     }
 }
