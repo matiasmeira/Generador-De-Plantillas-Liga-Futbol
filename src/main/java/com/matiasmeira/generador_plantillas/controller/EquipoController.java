@@ -32,8 +32,12 @@ public class EquipoController {
     }
 
     @GetMapping
-    public List<EquipoDTO.Salida> listar() {
-        return equipoService.obtenerTodos();
+    public ResponseEntity<List<?>> listar(
+        @RequestParam(value = "include", required = false) String include) {
+            if ("players".equals(include)){
+                return ResponseEntity.ok(equipoService.obtenerTodos());
+            }
+        return ResponseEntity.ok(equipoService.obtenerTodosLite());
     }
 
     @PutMapping("/{id}")

@@ -49,6 +49,19 @@ public class EquipoService {
         return equiposDto;
     }
 
+    public List<EquipoDTO.Lite> obtenerTodosLite() {
+        List<Equipo> equipos = equipoRepository.findAllLite();
+        List<EquipoDTO.Lite> equiposDto = new ArrayList<>();
+        for (Equipo equipo : equipos) {
+            EquipoDTO.Lite dto = new EquipoDTO.Lite();
+            dto.setId(equipo.getId());
+            dto.setNombre(equipo.getNombre());
+            dto.setUsuarioDueno(usuarioService.mapToDto(equipo.getUsuarioDueno()));
+            equiposDto.add(dto);
+        }
+        return equiposDto;
+    }
+
     @Transactional
     public EquipoDTO.Salida actualizarConSeguridad(Long equipoId, Equipo datosNuevos, Long usuarioIdSesion, String rolSesion) {
 

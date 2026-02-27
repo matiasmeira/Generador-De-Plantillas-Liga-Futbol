@@ -25,4 +25,12 @@ public class EquipoDTO {
         private UsuarioDTO.Salida usuarioDueno;
         private List<JugadorDTO.Salida> jugadores;
     }
+
+    @Data @Getter @Setter
+    @NoArgsConstructor @AllArgsConstructor
+    public static class Lite {
+        private Long id;
+        private String nombre;
+        private UsuarioDTO.Salida usuarioDueno;
+    }
 }

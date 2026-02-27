@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EquipoRepository extends JpaRepository<Equipo, Long> {
+    @Query("SELECT e FROM Equipo e")
+    List<Equipo> findAllLite();
 }
