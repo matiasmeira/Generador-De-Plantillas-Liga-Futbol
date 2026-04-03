@@ -17,9 +17,9 @@ public class UsuarioService {
 
     public UsuarioDTO.Salida guardar(UsuarioDTO.Entrada usuarioEntrada) {
         Usuario usuario = new Usuario();
-        usuario.setUsername(usuarioEntrada.getUsername());
-        usuario.setPassword(usuarioEntrada.getPassword());
-        usuario.setRol(usuarioEntrada.getRol());
+        usuario.setUsername(usuarioEntrada.username());
+        usuario.setPassword(usuarioEntrada.password());
+        usuario.setRol(usuarioEntrada.rol());
         return mapToDto(usuarioRepository.save(usuario));
     }
 
@@ -45,10 +45,12 @@ public class UsuarioService {
     }
 
     public UsuarioDTO.Salida mapToDto(Usuario usuario) {
-        UsuarioDTO.Salida usuarioSalida = new UsuarioDTO.Salida();
-        usuarioSalida.setId(usuario.getId());
-        usuarioSalida.setUsername(usuario.getUsername());
-        usuarioSalida.setRol(usuario.getRol());
-        return usuarioSalida;
+        if (usuario == null) return null;
+        
+        return new UsuarioDTO.Salida(
+            usuario.getId(),
+            usuario.getUsername(),
+            usuario.getRol()
+        );
     }
 }

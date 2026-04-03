@@ -2,35 +2,25 @@ package com.matiasmeira.generador_plantillas.dto;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
 public class EquipoDTO {
     
-    @Data @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
-    public static class Entrada {
-        private String nombre;
+    public record Entrada(
+        @NotBlank(message = "El nombre del equipo es obligatorio") 
+        String nombre
+    ) {}
 
-    }
+    public record Salida(
+        Long id,
+        String nombre,
+        UsuarioDTO.Salida usuarioDueno,
+        List<JugadorDTO.Salida> jugadores
+    ) {}
 
-    @Data @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
-    public static class Salida {
-        private Long id;
-        private String nombre;
-        private UsuarioDTO.Salida usuarioDueno;
-        private List<JugadorDTO.Salida> jugadores;
-    }
-
-    @Data @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
-    public static class Lite {
-        private Long id;
-        private String nombre;
-        private UsuarioDTO.Salida usuarioDueno;
-    }
+    public record Lite(
+        Long id,
+        String nombre,
+        UsuarioDTO.Salida usuarioDueno
+    ) {}
 }

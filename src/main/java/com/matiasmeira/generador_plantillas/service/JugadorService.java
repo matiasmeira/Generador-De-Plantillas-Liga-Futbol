@@ -26,11 +26,11 @@ public class JugadorService {
             throw new IllegalStateException("No se pueden agregar más de 22 jugadores a un equipo.");
         }
         Jugador jugador = new Jugador();
-        jugador.setNombre(jugadorDTO.getNombre());
+        jugador.setNombre(jugadorDTO.nombre());
         jugador.setEquipo(equipo);
-        jugador.setApellido(jugadorDTO.getApellido());
-        jugador.setDni(jugadorDTO.getDni());
-        jugador.setFechaNacimiento(jugadorDTO.getFechaNacimiento());
+        jugador.setApellido(jugadorDTO.apellido());
+        jugador.setDni(jugadorDTO.dni());
+        jugador.setFechaNacimiento(jugadorDTO.fechaNacimiento());
         return mapToDto(jugadorRepository.save(jugador));
     }
 
@@ -51,12 +51,15 @@ public class JugadorService {
     }
 
     public JugadorDTO.Salida mapToDto(Jugador jugador) {
-        JugadorDTO.Salida dto = new JugadorDTO.Salida();
-        dto.setId(jugador.getId());
-        dto.setNombre(jugador.getNombre());
-        if (jugador.getEquipo() != null) {
-            dto.setEquipoId(jugador.getEquipo().getId());
-        }
-        return dto;
+        Long equipoId = (jugador.getEquipo() != null) ? jugador.getEquipo().getId() : null;
+        
+        return new JugadorDTO.Salida(
+            jugador.getId(),
+            jugador.getNombre(),
+            jugador.getApellido(),
+            jugador.getFechaNacimiento(),
+            jugador.getDni(),
+            equipoId
+        );
     }
 }

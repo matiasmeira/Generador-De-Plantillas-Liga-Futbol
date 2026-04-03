@@ -3,6 +3,7 @@ package com.matiasmeira.generador_plantillas.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.matiasmeira.generador_plantillas.dto.EquipoDTO;
 import com.matiasmeira.generador_plantillas.dto.JugadorDTO;
 import com.matiasmeira.generador_plantillas.model.Equipo;
-import com.matiasmeira.generador_plantillas.model.Jugador;
 import com.matiasmeira.generador_plantillas.model.Usuario; 
 import com.matiasmeira.generador_plantillas.repository.EquipoRepository;
 import com.matiasmeira.generador_plantillas.repository.UsuarioRepository;
@@ -35,7 +35,7 @@ public class EquipoService {
         Usuario dueno = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Equipo equipo = new Equipo();
-        equipo.setNombre(equipoDTO.getNombre());
+        equipo.setNombre(equipoDTO.nombre());
         equipo.setUsuarioDueno(dueno);
         return mapToDTO(equipoRepository.save(equipo));
     }
@@ -50,16 +50,13 @@ public class EquipoService {
     }
 
     public List<EquipoDTO.Lite> obtenerTodosLite() {
-        List<Equipo> equipos = equipoRepository.findAllLite();
-        List<EquipoDTO.Lite> equiposDto = new ArrayList<>();
-        for (Equipo equipo : equipos) {
-            EquipoDTO.Lite dto = new EquipoDTO.Lite();
-            dto.setId(equipo.getId());
-            dto.setNombre(equipo.getNombre());
-            dto.setUsuarioDueno(usuarioService.mapToDto(equipo.getUsuarioDueno()));
-            equiposDto.add(dto);
-        }
-        return equiposDto;
+        return equipoRepository.findAllLite().stream()
+                .map(equipo -> new EquipoDTO.Lite(
+                        equipo.getId(),
+                        equipo.getNombre(),
+                        usuarioService.mapToDto(equipo.getUsuarioDueno())
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -81,19 +78,19 @@ public class EquipoService {
         return mapToDTO(equipoRepository.save(equipoExistente));
     }
 
-    EquipoDTO.Salida mapToDTO(Equipo equipo) {
-        EquipoDTO.Salida dto = new EquipoDTO.Salida();
-        dto.setId(equipo.getId());
-        dto.setNombre(equipo.getNombre());
-        dto.setUsuarioDueno(usuarioService.mapToDto(equipo.getUsuarioDueno()));
-        List<JugadorDTO.Salida> jugadoresDto = new ArrayList<>();
-        if (equipo.getJugadores() != null) {
-            for (Jugador jugador : equipo.getJugadores()) {
-                JugadorDTO.Salida dtoJugador = jugadorService.mapToDto(jugador);
-                jugadoresDto.add(dtoJugador);
-            }
-        }
-        dto.setJugadores(jugadoresDto);
-        return dto;
+    public EquipoDTO.Salida mapToDTO(Equipo equipo) {
+        if (equipo == null) return null;
+        
+        // Manejamos la lista con Streams. Si es null, devolvemos una lista vacía para evitar NullPointerException.
+        List<JugadorDTO.Salida> jugadoresDto = (equipo.getJugadores() != null) 
+            ? equipo.getJugadores().stream().map(jugadorService::mapToDto).collect(Collectors.toList())
+            : List.of();
+
+        return new EquipoDTO.Salida(
+            equipo.getId(),
+            equipo.getNombre(),
+            usuarioService.mapToDto(equipo.getUsuarioDueno()),
+            jugadoresDto
+        );
     }
 }

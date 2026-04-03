@@ -2,32 +2,34 @@ package com.matiasmeira.generador_plantillas.dto;
 
 import java.time.LocalDate;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class JugadorDTO {
     
-    @Data @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
-    public static class Entrada {
-        private String nombre;
-        private String apellido;
-        private LocalDate fechaNacimiento;
-        private String dni;
-        private Long equipoId;
-    }
+    public record Entrada(
+        @NotBlank(message = "El nombre es obligatorio") 
+        String nombre,
+        
+        @NotBlank(message = "El apellido es obligatorio") 
+        String apellido,
+        
+        @NotNull(message = "La fecha de nacimiento es obligatoria") 
+        LocalDate fechaNacimiento,
+        
+        @NotBlank(message = "El DNI es obligatorio") 
+        String dni,
+        
+        @NotNull(message = "El ID del equipo es obligatorio") 
+        Long equipoId
+    ) {}
 
-    @Data @Getter @Setter
-    @NoArgsConstructor @AllArgsConstructor
-    public static class Salida {
-        private Long id;
-        private String nombre;
-        private String apellido;
-        private LocalDate fechaNacimiento;
-        private String dni;
-        private Long equipoId;
-    }
+    public record Salida(
+        Long id,
+        String nombre,
+        String apellido,
+        LocalDate fechaNacimiento,
+        String dni,
+        Long equipoId
+    ) {}
 }
