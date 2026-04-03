@@ -16,6 +16,8 @@ import com.matiasmeira.generador_plantillas.dto.LoginRequest;
 import com.matiasmeira.generador_plantillas.dto.UsuarioDTO;
 import com.matiasmeira.generador_plantillas.service.UsuarioService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -41,13 +43,8 @@ public class UsuarioController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UsuarioDTO.Salida> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsuarioDTO.Salida usuario = usuarioService.login(loginRequest.username(), loginRequest.password());
-        
-        if (usuario != null) {
-            return ResponseEntity.ok(usuario); 
-        } else {
-            return ResponseEntity.status(401).body("Credenciales incorrectas"); 
-        }
+        return ResponseEntity.ok(usuario);
     }
 }

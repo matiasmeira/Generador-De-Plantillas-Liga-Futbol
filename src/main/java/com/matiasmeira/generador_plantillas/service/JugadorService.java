@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.matiasmeira.generador_plantillas.dto.JugadorDTO;
+import com.matiasmeira.generador_plantillas.exception.BusinessRuleException;
+import com.matiasmeira.generador_plantillas.exception.ResourceNotFoundException;
 import com.matiasmeira.generador_plantillas.model.Equipo;
 import com.matiasmeira.generador_plantillas.model.Jugador;
 import com.matiasmeira.generador_plantillas.repository.EquipoRepository;
@@ -20,10 +22,11 @@ public class JugadorService {
     private EquipoRepository equipoRepository;
 
     public JugadorDTO.Salida guardar(JugadorDTO.Entrada jugadorDTO, Long equipoId) {
-        Equipo equipo = equipoRepository.findById(equipoId).orElse(null);
+        Equipo equipo = equipoRepository.findById(equipoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipo no encontrado con ID: " + equipoId));
         int cantidadJugadores = jugadorRepository.countByEquipoId(equipoId);
         if(cantidadJugadores >= 22) {
-            throw new IllegalStateException("No se pueden agregar más de 22 jugadores a un equipo.");
+            throw new BusinessRuleException("No se pueden agregar más de 22 jugadores al equipo.");
         }
         Jugador jugador = new Jugador();
         jugador.setNombre(jugadorDTO.nombre());
@@ -45,7 +48,7 @@ public class JugadorService {
     
     public void eliminar(Long id) {
         if (!jugadorRepository.existsById(id)) {
-            throw new IllegalStateException("El jugador con id " + id + " no existe.");
+            throw new ResourceNotFoundException("El jugador con ID " + id + " no existe.");
         }
         jugadorRepository.deleteById(id);
     }

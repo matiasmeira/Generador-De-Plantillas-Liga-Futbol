@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.matiasmeira.generador_plantillas.dto.UsuarioDTO;
+import com.matiasmeira.generador_plantillas.exception.BusinessRuleException;
+import com.matiasmeira.generador_plantillas.exception.ResourceNotFoundException;
 import com.matiasmeira.generador_plantillas.model.Usuario;
 import com.matiasmeira.generador_plantillas.repository.UsuarioRepository;
 
@@ -33,15 +35,17 @@ public class UsuarioService {
     }
     
     public UsuarioDTO.Salida obtenerPorId(Long id) {
-        return mapToDto(usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+        return mapToDto(usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id)));
     }
 
     public UsuarioDTO.Salida login(String username, String password) {
-        Usuario usuario = usuarioRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (usuario.getPassword().equals(password)) {
-            return mapToDto(usuario);
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));         
+        if (!usuario.getPassword().equals(password)) {
+            throw new BusinessRuleException("Credenciales incorrectas");
         }
-        return null;
+        return mapToDto(usuario);
     }
 
     public UsuarioDTO.Salida mapToDto(Usuario usuario) {
