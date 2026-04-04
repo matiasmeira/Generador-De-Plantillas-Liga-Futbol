@@ -44,10 +44,20 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/api/usuarios", "/api/usuarios/login").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
-                .anyRequest().authenticated()
-            )
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+            .requestMatchers(
+                "/api/usuarios", 
+                "/api/usuarios/", 
+                "/api/usuarios/login", 
+                "/api/usuarios/login/"
+            ).permitAll()
+            
+            .requestMatchers("/actuator/**").permitAll()
+            
+            // 3. Cualquier otra ruta requiere autenticación
+            .anyRequest().authenticated()
+        )
             .userDetailsService(userDetailsService)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception
