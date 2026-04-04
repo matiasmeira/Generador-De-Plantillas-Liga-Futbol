@@ -1,87 +1,31 @@
-# Generador de Plantillas — Liga de Fútbol ⚽️
+# Generador de Plantillas - Liga de Fútbol REST API
 
-Descripción
+Una API REST desarrollada en Java con Spring Boot, diseñada para la gestión centralizada y eficiente de equipos, jugadores y usuarios en el contexto de una liga deportiva. 
 
-Backend en **Spring Boot** que gestiona plantillas de una liga de fútbol: equipos, jugadores y usuarios. Proyecto sencillo y listo para correr localmente; no requiere modificar el README para usarlo.
+Este proyecto demuestra la implementación de una arquitectura backend estructurada, aplicando validaciones de reglas de negocio, seguridad basada en tokens y persistencia de datos relacional.
 
-## Tecnologías principales 🔧
+## Stack Tecnológico
 
-- Java 17
-- Spring Boot 4.0.1
-- Spring Data JPA
-- PostgreSQL
-- Maven (con `mvnw`)
+![Java](https://img.shields.io/badge/Java_17-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.2-%236DB33F.svg?style=for-the-badge&logo=springboot&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+![Maven](https://img.shields.io/badge/Apache_Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
 
-## Endpoints REST principales 📡
+## Características Principales
 
-- **Equipos**
-  - GET  /api/equipos — Listar todos los equipos
-  - POST /api/equipos?usuarioId={id} — Crear equipo; parámetros: `usuarioId` (query). Campos esperados en el body (Content-Type: application/json): `nombre`, `escudoUrl`.
-  - PUT  /api/equipos/{id} — Actualizar equipo; headers requeridos: `X-User-Id`, `X-User-Role`.
+* **Seguridad y Control de Acceso (RBAC):** Implementación de autenticación y autorización Stateless mediante JSON Web Tokens (JWT). Los endpoints se encuentran protegidos y las modificaciones sobre los recursos operan bajo estrictas validaciones de roles (garantizando que solo un Administrador o el Propietario del equipo puedan realizar cambios).
+* **Gestión de Dominios Relacionales:** Operaciones integrales para la administración de las entidades `Usuarios`, `Equipos` y `Jugadores`, optimizando las consultas a la base de datos PostgreSQL mediante Spring Data JPA.
+* **Integridad y Reglas de Negocio:** Controles a nivel de capa de servicio para mantener la consistencia de los datos, incluyendo la restricción técnica de un máximo de 22 jugadores por plantilla.
+* **Data Seeding Automatizado:** Inicialización automatizada que pre-carga la base de datos con un set de pruebas (generación dinámica de equipos y jugadores realistas) para facilitar las pruebas funcionales en entornos de desarrollo local.
 
-- **Jugadores**
-  - POST   /api/jugadores?equipoId={id} — Crear jugador en un equipo; parámetros: `equipoId` (query). Campos en body: `nombre`, `apellido`, `fechaNacimiento` (ISO yyyy-mm-dd), `dni`.
-  - DELETE /api/jugadores/{id} — Eliminar jugador por id
-  - GET    /api/jugadores/equipo/{equipoId} — Listar jugadores por equipo
+## Resumen de la API
 
-- **Usuarios**
-  - POST /api/usuarios — Crear usuario. Campos en body: `username`, `password`, `rol` (opcional)
-  - GET  /api/usuarios — Listar usuarios
-  - POST /api/usuarios/login — Login; envía `username` y `password` en el body (Content-Type: application/json). Devuelve 200 con el usuario si las credenciales son correctas o 401 en caso contrario.
+La aplicación expone una serie de endpoints para interactuar con los recursos principales:
 
-> No se incluyen ejemplos de cuerpos JSON en este README por claridad; los campos necesarios se describen arriba.
+* **Autenticación:** `POST /api/usuarios/login` para la validación de credenciales y emisión del token JWT.
+* **Equipos:** Endpoints protegidos para listar, crear (`POST /api/equipos`) y modificar (`PUT /api/equipos/{id}`) plantillas, validando los headers de seguridad y propiedad.
+* **Jugadores:** Gestión del ciclo de vida del jugador dentro del club, desde su alta (`POST /api/jugadores`) hasta su baja (`DELETE /api/jugadores/{id}`), consultando la disponibilidad del equipo en tiempo real.
 
-## Ejemplos rápidos (curl) 🧪
-
-- Listar equipos:
-
-  curl -X GET http://localhost:8080/api/equipos
-
-- Listar jugadores de un equipo (id = 1):
-
-  curl -X GET http://localhost:8080/api/jugadores/equipo/1
-
-- Eliminar jugador (id = 5):
-
-  curl -X DELETE http://localhost:8080/api/jugadores/5
-
-## Configuración por defecto ⚙️
-
-Valores desde `src/main/resources/application.properties`:
-
-- URL de base de datos: `jdbc:postgresql://localhost:5432/DBPlantillas` (variable `DATABASE_PUBLIC_URL`)
-- Usuario por defecto: `postgres` (variable `PGUSER`)
-- Contraseña por defecto: `matias` (variable `PGPASSWORD`)
-- Puerto por defecto: `8080` (variable `PORT`)
-
-Si prefieres usar otros valores, exporta las variables de entorno adecuadas antes de arrancar la aplicación.
-
-## CORS
-
-La configuración CORS en `CorsConfig.java` permite por defecto orígenes como `http://localhost:5173` y `https://*.up.railway.app`.
-
-## Ejecutar localmente ▶️
-
-1. Abre una terminal en la carpeta del proyecto
-2. Ejecuta en Windows:
-   - `mvnw.cmd spring-boot:run`
-3. O en Unix/macOS:
-   - `./mvnw spring-boot:run`
-4. Alternativa: empaquetar y ejecutar el jar
-   - `mvnw package`
-   - `java -jar target/generador-plantillas-0.0.1-SNAPSHOT.jar`
-
-## Tests ✅
-
-Ejecuta las pruebas con:
-
-- `mvnw test`
-
-## Notas y mejoras posibles 💡
-
-- Añadir autenticación robusta (JWT) y roles más estrictos
-- Manejar validaciones y errores (códigos HTTP claros y mensajes)
-- Añadir documentación de API si se desea (por ejemplo OpenAPI) — no incluida por defecto
-
-
-
+---
+*Desarrollado por Matias Meira*
